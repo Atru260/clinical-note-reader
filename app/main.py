@@ -20,6 +20,7 @@ def read_root():
 def health():
     return {"status": "ok"}
 
+#TODO: Replace analyze function with llm_client's
 @app.post("/analyze")
 def analyze(request: AnalysisRequest):
     return analyze_clinical_text(request.text)

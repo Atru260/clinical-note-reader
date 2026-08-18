@@ -11,6 +11,9 @@ from datetime import datetime
 def analyze_clinical_text(text: str):
     return analyze_placeholder(text)
 
+'''
+Return Dummy AnalysisResponse object
+'''
 def analyze_placeholder(text: str):
     return AnalysisResponse(**{
         "metadata": Metadata(

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from app.schemas import AnalysisResponse
+from schemas import AnalysisResponse
 
 class LLMClient(ABC):
 
