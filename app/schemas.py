@@ -1,83 +1,101 @@
 from  datetime import datetime
+from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
-class Metadata(BaseModel):
+
+class StrictBaseModel(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+
+class PresenceStatus(str, Enum):
+    PRESENT = "present"
+    ABSENT = "absent"
+    UNKNOWN = "unknown"
+
+class Certainty(str, Enum):
+    CONFIRMED = "confirmed"
+    SUSPECTED = "suspected"
+    NEGATED = "negated"
+    UNKNOWN = "unknown"
+
+class Metadata(StrictBaseModel):
     request_id: str
     timestamp: str | datetime
     model_name: str
     processing_time_ms: float
     schema_version: str
 
-class Summary(BaseModel):
+class Summary(StrictBaseModel):
     author: str
     subject: str
     brief: str
 
-class Symptom(BaseModel):
+class Symptom(StrictBaseModel):
     name: str
-    severity: str
-    status: str
-    certainty: str
+    severity: str | None = None
+    duration: str | None = None
+    status: PresenceStatus
+    certainty: Certainty
 
-class Medication(BaseModel):
+class Medication(StrictBaseModel):
     name: str
-    dose: str
-    frequency: str
+    dose: str | None = None
+    frequency: str | None = None
 
-class Condition(BaseModel):
+class Condition(StrictBaseModel):
     name: str
-    diagnosis_date: str
-    status: str
+    status: PresenceStatus
+    certainty: Certainty
 
-class Allergy(BaseModel):
-    name: str
-    severity: str
+class Allergy(StrictBaseModel):
+    substance: str
+    reaction: str | None = None
 
-class LaboratoryValue(BaseModel):
+class Measurement(StrictBaseModel):
     name: str
     value: str
+    unit: str | None = None
 
-class Procedure(BaseModel):
+class Procedure(StrictBaseModel):
     name: str
     date: str
 
-class LifestyleFactor(BaseModel):
+class LifestyleFactor(StrictBaseModel):
     name: str
-    status: str
+    status: PresenceStatus
 
+class TemporalInformation(StrictBaseModel):
+    onset: str | None = None
+    duration: str | None = None
+    progression: str | None = None
 
-class TemporalInformation(BaseModel):
-    onset: str
-    duration: str
-    progression: str
-    timeline_events: list[str]
+# class Observation(StrictBaseModel):
+#     finding: str
+#     evidence: str
+#     confidence: float
 
-class Observation(BaseModel):
-    finding: str
-    evidence: str
-    confidence: float
+# class Uncertainty(StrictBaseModel):
+#     missing_information: list[str]
+#     ambiguous_terms: list[str]
 
-class Uncertainty(BaseModel):
-    missing_information: list[str]
-    ambiguous_terms: list[str]
-
-class ClinicalEntities(BaseModel):
+class ClinicalEntities(StrictBaseModel):
     symptoms: list[Symptom]
     medications: list[Medication]
     conditions: list[Condition]
     procedures: list[Procedure]
-    laboratory_values: list[LaboratoryValue]
+    measurements: list[Measurement]
     allergies: list[Allergy]
     lifestyle_factors: list[LifestyleFactor]
 
-class AnalysisResponse(BaseModel):
-    metadata: Metadata
+class ExtractedClinicalData(StrictBaseModel):
     summary: Summary
     entities: ClinicalEntities
     temporal_information: TemporalInformation
-    observations: list[Observation]
-    uncertainty: Uncertainty
+
+class AnalysisResponse(BaseModel):
+    metadata: Metadata
+    extraction: ExtractedClinicalData
     raw_text: str
 
 class AnalysisRequest(BaseModel):

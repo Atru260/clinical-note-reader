@@ -5,6 +5,7 @@ import pytest
 from dotenv import dotenv_values
 
 from llm.gemini_client import GeminiClient
+from schemas import AnalysisResponse, ExtractedClinicalData
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 SAMPLE_DIR = BASE_DIR / "tests" / "sample_data"
@@ -43,5 +44,5 @@ def test_client_analyze_sample_data(sample_file):
 
     print(result)
 
-    assert isinstance(result, str)
-    assert result.strip(), f"No analysis returned for {sample_file.name}"
+    assert isinstance(result, ExtractedClinicalData)
+    assert str(result).strip(), f"No analysis returned for {sample_file.name}"
